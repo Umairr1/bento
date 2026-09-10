@@ -88,6 +88,7 @@ import {
   UndoIcon,
   RedoIcon,
   ShareIcon,
+  BackIcon,
 } from "./toolbarIcons";
 import { ShuffleIcon } from "./sidebarIcons";
 import "./BoardEditor.css";
@@ -1565,15 +1566,22 @@ function BoardEditorInner() {
   return (
     <div className="board-editor" style={{ "--corner-radius": `${settings.cornerRadius}px` } as CSSProperties}>
       <header className="board-editor-header">
-        <Link to="/" className="btn small">
-          ← Dashboard
-        </Link>
-        {board?.parent_board_id && (
-          <Link to={`/board/${board.parent_board_id}`} className="btn small">
-            ↑ {board.parentTitle}
+        <div className="hdr-left">
+          <Link to="/" className="btn icon-btn ghost" title="Back to dashboard">
+            <BackIcon />
           </Link>
-        )}
-        <h1>{board?.title ?? "Loading…"}</h1>
+          <div className="hdr-crumbs">
+            {board?.parent_board_id && (
+              <>
+                <Link to={`/board/${board.parent_board_id}`} className="hdr-crumb">
+                  {board.parentTitle}
+                </Link>
+                <span className="hdr-crumb-sep">/</span>
+              </>
+            )}
+            <h1>{board?.title ?? "Loading…"}</h1>
+          </div>
+        </div>
 
         {searchOpen ? (
           <div className="board-search">
@@ -1617,65 +1625,48 @@ function BoardEditorInner() {
               <CloseIcon />
             </button>
           </div>
-        ) : (
-          <button className="btn small" onClick={() => setSearchOpen(true)} title="Search notes (Ctrl+F)">
-            <SearchIcon /> Search
-          </button>
-        )}
+        ) : null}
 
-        <div className="board-editor-actions">
-          <div className="presence-list">
-            {presence.map((p) => (
-              <div key={p.clientId} className="presence-dot" style={{ background: p.color }} title={p.name}>
-                {p.name.slice(0, 1).toUpperCase()}
-              </div>
-            ))}
-          </div>
-          <span className={`conn-status conn-status--${status}`}>
-            {status === "connected" && "Live"}
-            {status === "connecting" && "Connecting…"}
-            {status === "disconnected" && "Offline"}
-          </span>
-          <button className="btn small share-btn" onClick={() => setShareOpen(true)} title="Share this board with your team">
-            <ShareIcon /> Share
-          </button>
-          <button className="btn small icon-btn" onClick={undo} title="Undo (Ctrl+Z)">
-            <UndoIcon />
-          </button>
-          <button className="btn small icon-btn" onClick={redo} title="Redo (Ctrl+Shift+Z)">
-            <RedoIcon />
-          </button>
-          <button className="btn small" onClick={() => fitView({ duration: 400, padding: 0.15 })} title="Fit all notes in view">
-            <FitViewIcon /> Fit view
-          </button>
-          <button
-            className="btn small"
-            onClick={handleShuffle}
-            title={settings.gridMode ? "Re-split the grid into a fresh balanced layout" : "Shuffle notes into a fresh layout"}
-          >
-            <ShuffleIcon /> Shuffle
-          </button>
-          <button className="btn small" onClick={addTextNote}>
-            <TextGlyphIcon /> Text
-          </button>
-          <button className="btn small" onClick={addImageNote}>
-            <ImageGlyphIcon /> Image
-          </button>
-          <button className="btn small" onClick={addLinkNote}>
-            <LinkGlyphIcon /> Link
-          </button>
-          <button className="btn small" onClick={addChecklistNote}>
-            <ChecklistGlyphIcon /> Checklist
-          </button>
-          <div className="column-picker-wrap">
-            <button
-              className="btn small"
-              onClick={() => setColumnPickerOpen((v) => !v)}
-              disabled={settings.gridMode}
-              title={settings.gridMode ? "Already in Grid canvas mode" : "Arrange notes into a grid"}
-            >
-              <ColumnsIcon /> Grid
+        <div className="hdr-center">
+          {/* Insert: every one of these adds a note, so they read as one segmented control rather
+              than six competing buttons. Labels move into tooltips — the row was 15 wide. */}
+          <div className="btn-cluster" role="group" aria-label="Insert">
+            <button onClick={addTextNote} title="Text note">
+              <TextGlyphIcon />
             </button>
+            <button onClick={addImageNote} title="Image or video">
+              <ImageGlyphIcon />
+            </button>
+            <button onClick={addLinkNote} title="Link">
+              <LinkGlyphIcon />
+            </button>
+            <button onClick={addChecklistNote} title="Checklist">
+              <ChecklistGlyphIcon />
+            </button>
+            <button onClick={addBoardNote} title="Nested board">
+              <BoardGlyphIcon />
+            </button>
+            <button onClick={addShapeNote} title="Shape">
+              <ShapeGlyphIcon />
+            </button>
+          </div>
+
+          {/* Layout: rearranges what's already on the canvas. */}
+          <div className="btn-cluster" role="group" aria-label="Layout">
+            <button
+              onClick={handleShuffle}
+              title={settings.gridMode ? "Re-split the grid into a fresh balanced layout" : "Shuffle notes into a fresh layout"}
+            >
+              <ShuffleIcon />
+            </button>
+            <div className="column-picker-wrap">
+              <button
+                onClick={() => setColumnPickerOpen((v) => !v)}
+                disabled={settings.gridMode}
+                title={settings.gridMode ? "Already in Grid canvas mode" : "Arrange notes into a grid"}
+              >
+                <ColumnsIcon />
+              </button>
             {columnPickerOpen && (
               <>
                 <div className="popover-backdrop" onClick={() => setColumnPickerOpen(false)} />
@@ -1736,12 +1727,44 @@ function BoardEditorInner() {
                 </div>
               </>
             )}
+            </div>
+            <button onClick={() => fitView({ duration: 400, padding: 0.15 })} title="Fit all notes in view">
+              <FitViewIcon />
+            </button>
           </div>
-          <button className="btn small" onClick={addBoardNote}>
-            <BoardGlyphIcon /> Board
+
+          <div className="btn-cluster" role="group" aria-label="History">
+            <button onClick={undo} title="Undo (Ctrl+Z)">
+              <UndoIcon />
+            </button>
+            <button onClick={redo} title="Redo (Ctrl+Shift+Z)">
+              <RedoIcon />
+            </button>
+          </div>
+
+          <button className="btn icon-btn ghost" onClick={() => setSearchOpen(true)} title="Search notes (Ctrl+F)">
+            <SearchIcon />
           </button>
-          <button className="btn small" onClick={addShapeNote}>
-            <ShapeGlyphIcon /> Shape
+        </div>
+
+        <div className="board-editor-actions">
+          <span className={`conn-status conn-status--${status}`} title={`Sync: ${status}`}>
+            <span className="conn-dot" />
+            {status === "connected" && "Live"}
+            {status === "connecting" && "Connecting…"}
+            {status === "disconnected" && "Offline"}
+          </span>
+          {presence.length > 0 && (
+            <div className="presence-list">
+              {presence.map((p) => (
+                <div key={p.clientId} className="presence-dot" style={{ background: p.color }} title={p.name}>
+                  {p.name.slice(0, 1).toUpperCase()}
+                </div>
+              ))}
+            </div>
+          )}
+          <button className="btn small share-btn" onClick={() => setShareOpen(true)} title="Share this board with your team">
+            <ShareIcon /> Share
           </button>
           <button className="btn small primary" onClick={() => setPresenting(true)} disabled={nodes.length < 1}>
             <PlayIcon /> Present
@@ -1893,13 +1916,32 @@ function BoardEditorInner() {
                       })()}
                   </ViewportPortal>
                 )}
+                {/* Freeform's blank canvas is an unbroken dark field with no affordances at all —
+                    grid mode has its own in-canvas version inside the frame. Pointer-events are off
+                    so it never intercepts a drag on the canvas beneath it. */}
+                {!settings.gridMode && nodes.length === 0 && (
+                  <div className="canvas-empty-state">
+                    <h3>Start your board</h3>
+                    <p>Drop images or video straight onto the canvas, paste a link, or add a note.</p>
+                    <div className="canvas-empty-actions">
+                      <button className="btn primary" onClick={addTextNote}>
+                        <TextGlyphIcon /> Add a note
+                      </button>
+                      <button className="btn" onClick={addImageNote}>
+                        <ImageGlyphIcon /> Add an image
+                      </button>
+                    </div>
+                    <p className="canvas-empty-hint">
+                      Double-click the canvas for a quick note · <kbd>Ctrl</kbd>+<kbd>F</kbd> to search
+                    </p>
+                  </div>
+                )}
                 <Controls />
                 <MiniMap
                   pannable
                   zoomable
-                  nodeColor={(n) => (n as NoteNode).tagColor ?? "#3a3850"}
-                  maskColor="rgba(10,10,14,0.7)"
-                  style={{ background: "#111114" }}
+                  nodeColor={(n) => (n as NoteNode).tagColor ?? "#4a4870"}
+                  maskColor="rgba(10,10,14,0.66)"
                 />
               </ReactFlow>
               </NoteActionsContext.Provider>

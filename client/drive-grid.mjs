@@ -55,18 +55,18 @@ try {
   await page.waitForTimeout(500);
 
   // workspace
-  await page.click("text=+ New workspace");
+  await page.click('.ws-panel-head button[title="New workspace"]');
   await page.fill('input[placeholder="Workspace name"]', "WS");
-  await page.click("button:has-text('Add')");
+  await page.press('input[placeholder="Workspace name"]', "Enter");
   await page.waitForTimeout(600);
 
   // board
-  await page.click("text=+ New board");
+  await page.click('button:has-text("New board")');
   await page.fill('input[placeholder="Board title"]', "Grid Board");
-  await page.click(".inline-form button:has-text('Add')");
+  await page.press('input[placeholder="Board title"]', "Enter");
   await page.waitForTimeout(800);
 
-  await page.click("a:has-text('Open')");
+  // Creating a board now opens it directly.
   await page.waitForSelector(".board-editor", { timeout: 15000 });
   await page.waitForTimeout(1500);
   await shot(page, "01-board-open");
@@ -80,7 +80,7 @@ try {
   await shot(page, "02-grid-mode-on");
 
   // zoom to fit so we can see the whole grid
-  const fit = page.locator("button:has-text('Fit view')");
+  const fit = page.locator('.btn-cluster button[title="Fit all notes in view"]');
   if (await fit.count()) {
     await fit.first().click();
     await page.waitForTimeout(800);
@@ -184,7 +184,8 @@ try {
   }
 
   // top-bar shuffle button
-  const topShuffle = page.locator("header button:has-text('Shuffle')");
+  // In grid mode this button's tooltip reads "Re-split…", so target it by its cluster position.
+  const topShuffle = page.locator('header div[aria-label="Layout"] > button').first();
   console.log("top-bar shuffle button:", await topShuffle.count());
   if (await topShuffle.count()) {
     await topShuffle.first().click();

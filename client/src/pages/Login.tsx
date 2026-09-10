@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { safeNext, withNext } from "../auth/nextParam";
 import { ApiError } from "../api/client";
+import { AuthBrand } from "../ui/Brand";
 import "./AuthPages.css";
 
 export default function Login() {
@@ -30,9 +31,10 @@ export default function Login() {
 
   return (
     <main className="auth-page">
+      <AuthBrand />
       <form className="auth-card" onSubmit={handleSubmit}>
         <h1>Welcome back</h1>
-        <p className="subtitle">Log in to your boards.</p>
+        <p className="subtitle">Log in to pick up where your team left off.</p>
 
         {error && <div className="auth-error">{error}</div>}
 

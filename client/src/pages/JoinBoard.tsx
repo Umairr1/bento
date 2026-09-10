@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { api, ApiError } from "../api/client";
+import { AuthBrand } from "../ui/Brand";
 import "./AuthPages.css";
 
 /**
@@ -25,6 +26,7 @@ export default function JoinBoard() {
 
   return (
     <main className="auth-page">
+      <AuthBrand />
       <div className="auth-card">
         <h1>{error ? "Can't join" : "Joining board…"}</h1>
         {error ? (

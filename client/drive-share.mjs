@@ -41,13 +41,13 @@ try {
   await o.waitForURL(BASE + "/");
   log("owner signed up");
 
-  await o.click("text=+ New workspace");
+  await o.click('.ws-panel-head button[title="New workspace"]');
   await o.fill('input[placeholder="Workspace name"]', "Team");
   await o.press('input[placeholder="Workspace name"]', "Enter");
-  await o.click("text=+ New board");
+  await o.click('button:has-text("New board")');
   await o.fill('input[placeholder="Board title"]', "Shared Board");
   await o.press('input[placeholder="Board title"]', "Enter");
-  await o.click(".board-card >> text=Open");
+  // Creating a board opens it directly.
   await o.waitForURL(/\/board\/\d+/);
   const boardUrl = o.url();
   log(`owner opened ${boardUrl}`);
@@ -94,7 +94,7 @@ try {
   // ---- guest edits, owner sees it live ----
   await g.waitForSelector(".conn-status--connected", { timeout: 15000 });
   const before = await o.locator(".react-flow__node").count();
-  await g.click('button:has-text("Text")');
+  await g.click('.btn-cluster button[title="Text note"]');
   await o.waitForFunction(
     (n) => document.querySelectorAll(".react-flow__node").length > n,
     before,

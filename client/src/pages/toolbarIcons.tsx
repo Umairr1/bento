@@ -328,3 +328,11 @@ export function ShareIcon({ size = 13 }: IconProps) {
     </svg>
   );
 }
+
+export function BackIcon({ size = 15 }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" {...base}>
+      <path d="M9.5 3.5L5 8l4.5 4.5" />
+    </svg>
+  );
+}

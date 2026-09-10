@@ -23,29 +23,42 @@
   color: #5f5d68;
 }
 
+/* Collapsed sections used to be ~88px tall each, so nine of them filled the whole rail with
+   nothing but headings. Tighter rows fit the list without scrolling. */
 .bsb-section {
   border-bottom: 1px solid #1a1a1f;
-  padding: 12px 16px;
+  padding: 7px 14px;
 }
 .bsb-section:last-child {
   border-bottom: none;
+}
+/* Only the open section gets a lifted background, so "where am I" is readable at a glance. */
+.bsb-section:not(.collapsed) {
+  background: rgba(255, 255, 255, 0.017);
+  padding-bottom: 13px;
 }
 
 .bsb-section-head {
   width: 100%;
   background: transparent;
   border: none;
-  color: #eceaf0;
   display: flex;
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
+  font-family: inherit;
   font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
+  font-weight: 650;
+  letter-spacing: 0.055em;
   text-transform: uppercase;
-  color: #8b8894;
-  padding: 2px 0;
+  color: var(--text-faint);
+  padding: 5px 0;
+}
+.bsb-section-head:hover {
+  color: var(--text-muted);
+}
+.bsb-section:not(.collapsed) .bsb-section-head {
+  color: var(--text);
 }
 
 .bsb-section-title {
@@ -58,8 +71,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #6d6bfa;
+  color: var(--accent);
   flex: none;
+  /* Nine full-strength accent icons stacked down the rail is a lot of violet; dim the closed ones
+     so the open section's icon is the one that reads. */
+  opacity: 0.6;
+}
+.bsb-section:not(.collapsed) .bsb-section-icon {
+  opacity: 1;
 }
 
 .bsb-section-head:hover .bsb-section-icon {

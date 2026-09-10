@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { safeNext, withNext } from "../auth/nextParam";
 import { ApiError } from "../api/client";
+import { AuthBrand } from "../ui/Brand";
 import "./AuthPages.css";
 
 export default function Signup() {
@@ -31,9 +32,10 @@ export default function Signup() {
 
   return (
     <main className="auth-page">
+      <AuthBrand />
       <form className="auth-card" onSubmit={handleSubmit}>
         <h1>Create your account</h1>
-        <p className="subtitle">Free, forever — build boards with your team.</p>
+        <p className="subtitle">Free, forever. Infinite canvas, real-time with your team.</p>
 
         {error && <div className="auth-error">{error}</div>}
 
