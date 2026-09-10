@@ -1,0 +1,19 @@
+node_modules/
+dist/
+build/
+*.log
+.env
+server/data.sqlite3
+server/data.sqlite3-*
+server/uploads/
+client/drive-shots/
+
+# Large reference recordings — kept locally, not in git history
+*.mp4
+*.webm
+# Playwright browser-driving fixture
+client/test-image.png
+
+# Claude Code local state
+.claude/scheduled_tasks.lock
+.claude/settings.local.json

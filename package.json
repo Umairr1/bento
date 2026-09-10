@@ -1,0 +1,15 @@
+{
+  "name": "boards",
+  "version": "0.1.0",
+  "description": "Free, self-hosted, real-time collaborative visual canvas (Milanote-style) for designers and creatives.",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -n server,client -c green,cyan \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+    "dev:server": "npm run dev --prefix server",
+    "dev:client": "npm run dev --prefix client"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^10.0.5"
+  }
+}

@@ -1,0 +1,141 @@
+.column-note {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.column-note-shape {
+  width: 100%;
+  height: 100%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  background: #141319;
+  border: 1px solid #232228;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.column-title {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #eceaf0;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 0 6px;
+  border-bottom: 1px solid #232228;
+}
+
+.column-items {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.column-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #1a1a20;
+  border-radius: 6px;
+  padding: 3px 4px;
+}
+
+.column-row-move {
+  display: flex;
+  flex-direction: column;
+  flex: none;
+}
+.column-row-move button {
+  background: transparent;
+  border: none;
+  color: #5f5d68;
+  cursor: pointer;
+  font-size: 9px;
+  line-height: 1.2;
+  padding: 0;
+}
+.column-row-move button:hover:not(:disabled) {
+  color: #cfceff;
+}
+.column-row-move button:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
+.column-text {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #eceaf0;
+  font-size: 12.5px;
+  padding: 4px;
+}
+
+.column-remove {
+  flex: none;
+  background: transparent;
+  border: none;
+  color: #5f5d68;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  padding: 0 2px;
+}
+.column-remove:hover {
+  color: #f0607a;
+}
+
+.column-add {
+  flex: none;
+  background: transparent;
+  border: 1px dashed #3a3942;
+  border-radius: 6px;
+  color: #8b8894;
+  font-size: 11.5px;
+  padding: 5px;
+  cursor: pointer;
+}
+.column-add:hover {
+  border-color: #6d6bfa;
+  color: #cfceff;
+}
+
+.column-note-delete {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: none;
+  background: #17161c;
+  color: #eceaf0;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s;
+}
+.column-note:hover .column-note-delete,
+.column-note-delete:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.column-note-delete:hover {
+  background: #f0607a;
+}

@@ -1,0 +1,124 @@
+.link-note {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  background: #17161c;
+  border: 1px solid #232228;
+}
+
+.link-note-card {
+  overflow: hidden;
+}
+
+.link-note-empty,
+.link-note-loading {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  color: #8b8894;
+  font-size: 12.5px;
+  overflow: hidden;
+}
+
+.link-note-empty input {
+  width: 100%;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid #232228;
+  background: #000;
+  color: #eceaf0;
+  padding: 0 10px;
+  outline: none;
+  font-size: 12.5px;
+}
+.link-note-empty input:focus {
+  border-color: #6d6bfa;
+}
+
+.link-note-card {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.link-note-thumb {
+  flex: 1;
+  min-height: 0;
+  background: #000;
+}
+.link-note-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.link-note-body {
+  padding: 8px 10px;
+  flex: none;
+}
+
+.link-note-title {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #eceaf0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.link-note-desc {
+  font-size: 11px;
+  color: #8b8894;
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.link-note-url {
+  font-size: 10.5px;
+  color: #5f5d68;
+  margin-top: 4px;
+}
+
+.link-note-delete {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: none;
+  background: #17161c;
+  color: #eceaf0;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s;
+}
+.link-note:hover .link-note-delete,
+.link-note-delete:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.link-note-delete:hover {
+  background: #f0607a;
+}

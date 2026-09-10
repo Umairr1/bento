@@ -1,0 +1,64 @@
+.note-shape--square,
+.note-shape--rounded,
+.note-shape--soft,
+.note-shape--squircle,
+.note-shape--mixed {
+  clip-path: none;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.note-shape--square {
+  border-radius: 0;
+}
+.note-shape--rounded {
+  border-radius: var(--corner-radius, 8px);
+}
+.note-shape--soft {
+  border-radius: calc(var(--corner-radius, 16px) * 1.4);
+}
+.note-shape--squircle {
+  border-radius: 30%;
+}
+.note-shape--mixed {
+  border-radius: calc(var(--corner-radius, 16px) * 1.4) calc(var(--corner-radius, 16px) * 0.25)
+    calc(var(--corner-radius, 16px) * 1.4) calc(var(--corner-radius, 16px) * 0.25);
+}
+
+.note-shape--chamfer {
+  border-radius: 0;
+  clip-path: polygon(
+    var(--corner-radius, 10px) 0,
+    calc(100% - var(--corner-radius, 10px)) 0,
+    100% var(--corner-radius, 10px),
+    100% calc(100% - var(--corner-radius, 10px)),
+    calc(100% - var(--corner-radius, 10px)) 100%,
+    var(--corner-radius, 10px) 100%,
+    0 calc(100% - var(--corner-radius, 10px)),
+    0 var(--corner-radius, 10px)
+  );
+}
+
+.note-shape--notch {
+  border-radius: 0;
+  clip-path: polygon(0 0, calc(100% - var(--corner-radius, 18px)) 0, 100% var(--corner-radius, 18px), 100% 100%, 0 100%);
+}
+
+.note-shape--scooped {
+  border-radius: 0;
+  --scoop-r: var(--corner-radius, 15px);
+  -webkit-mask-image: radial-gradient(circle at top left, transparent var(--scoop-r), black calc(var(--scoop-r) + 0.5px)),
+    radial-gradient(circle at top right, transparent var(--scoop-r), black calc(var(--scoop-r) + 0.5px)),
+    radial-gradient(circle at bottom left, transparent var(--scoop-r), black calc(var(--scoop-r) + 0.5px)),
+    radial-gradient(circle at bottom right, transparent var(--scoop-r), black calc(var(--scoop-r) + 0.5px));
+  mask-image: radial-gradient(circle at top left, transparent var(--scoop-r), black calc(var(--scoop-r) + 0.5px)),
+    radial-gradient(circle at top right, transparent var(--scoop-r), black calc(var(--scoop-r) + 0.5px)),
+    radial-gradient(circle at bottom left, transparent var(--scoop-r), black calc(var(--scoop-r) + 0.5px)),
+    radial-gradient(circle at bottom right, transparent var(--scoop-r), black calc(var(--scoop-r) + 0.5px));
+  -webkit-mask-position: top left, top right, bottom left, bottom right;
+  mask-position: top left, top right, bottom left, bottom right;
+  -webkit-mask-size: 51% 51%;
+  mask-size: 51% 51%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}

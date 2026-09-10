@@ -1,0 +1,114 @@
+.board-note {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.board-note-card {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #232130, #17161c);
+  border: 1px solid #2f2d3a;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  text-decoration: none;
+  color: #eceaf0;
+  cursor: pointer;
+  padding: 12px;
+  text-align: center;
+  overflow: hidden;
+}
+.board-note-card:hover {
+  border-color: #6d6bfa;
+}
+
+.board-note-icon {
+  font-size: 22px;
+  color: #a78bfa;
+}
+
+.board-note-title {
+  font-size: 13px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.board-note-open {
+  font-size: 10.5px;
+  color: #8b8894;
+}
+
+.board-note-empty {
+  width: 100%;
+  height: 100%;
+  border: 1.5px dashed #3a3942;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px;
+  overflow: hidden;
+}
+
+.board-note-empty input {
+  width: 100%;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid #232228;
+  background: #000;
+  color: #eceaf0;
+  padding: 0 10px;
+  outline: none;
+  font-size: 12.5px;
+  text-align: center;
+}
+.board-note-empty input:focus {
+  border-color: #6d6bfa;
+}
+
+.board-note-status {
+  font-size: 11px;
+  color: #8b8894;
+}
+.board-note-error {
+  font-size: 11px;
+  color: #f0607a;
+}
+
+.board-note-delete {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: none;
+  background: #17161c;
+  color: #eceaf0;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s;
+}
+.board-note:hover .board-note-delete,
+.board-note-delete:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.board-note-delete:hover {
+  background: #f0607a;
+}

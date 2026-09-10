@@ -1,0 +1,109 @@
+.note-chrome {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.note-chrome-tag {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+  z-index: 5;
+}
+
+.note-chrome-grid-label {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  background: rgba(0, 0, 0, 0.6);
+  color: #f2f2f4;
+  padding: 4px 9px;
+  border-radius: 7px;
+  pointer-events: none;
+  z-index: 5;
+  backdrop-filter: blur(2px);
+}
+
+/* Bento's `.box.selected .handle, .box:hover .handle` — the grid resize pills are always in the DOM
+   and revealed on hover as well as selection, so you can grab an edge without clicking first. */
+.react-flow__resize-control.grid-resize-pill {
+  display: none;
+}
+/* The :not() keeps locked notes from ever matching, rather than relying on a later override winning
+   a specificity fight with this rule. */
+.react-flow__node:hover .note-chrome:not(.note-chrome--locked) .react-flow__resize-control.grid-resize-pill,
+.react-flow__node.selected .note-chrome:not(.note-chrome--locked) .react-flow__resize-control.grid-resize-pill {
+  display: block;
+}
+
+/* Bento's .b-toolbar: hidden until the note is hovered or selected, pinned top-right. */
+.note-chrome-toolbar {
+  position: absolute;
+  /* Sits below the north pill's inner half (9px) so the two never collide. Deliberately NOT
+     counter-zoomed: at fit-view zoom that scales it ~2x and it swamps the box and its neighbours. */
+  top: 14px;
+  right: 6px;
+  display: none;
+  gap: 3px;
+  z-index: 6;
+}
+.note-chrome:hover .note-chrome-toolbar,
+.react-flow__node.selected .note-chrome-toolbar {
+  display: flex;
+}
+
+.nc-tbtn {
+  width: 22px;
+  height: 22px;
+  flex: none;
+  border-radius: 6px;
+  background: rgba(10, 10, 12, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+.nc-tbtn:hover {
+  background: rgba(109, 107, 250, 0.85);
+}
+.nc-tbtn--danger:hover {
+  background: #f0607a;
+}
+
+.note-chrome-lock {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  font-size: 11px;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.6));
+  pointer-events: none;
+  z-index: 5;
+}
+
+.note-chrome--matched {
+  outline: 2px solid #e8a33d;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.note-chrome--current {
+  outline: 2px solid #f0607a;
+}
+
+.note-chrome--locked .react-flow__resize-control {
+  pointer-events: none;
+  display: none;
+}
+
