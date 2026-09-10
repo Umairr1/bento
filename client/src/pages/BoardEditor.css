@@ -672,3 +672,16 @@
   color: #eceaf0;
   font-family: sans-serif;
 }
+
+/* Share is the one header action that brings other people in, so it reads a step louder than the
+   rest of the row without going full .primary (which is reserved for create actions). */
+.btn.share-btn {
+  border-color: #3a39a8;
+  background: rgba(109, 107, 250, 0.16);
+  color: #cfceff;
+  font-weight: 600;
+}
+.btn.share-btn:hover {
+  background: rgba(109, 107, 250, 0.3);
+  border-color: #6d6bfa;
+}

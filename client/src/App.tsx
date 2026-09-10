@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import BoardEditor from "./pages/BoardEditor";
+import JoinBoard from "./pages/JoinBoard";
 
 function App() {
   return (
@@ -28,6 +29,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <BoardEditor />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/join/:token"
+              element={
+                <ProtectedRoute>
+                  <JoinBoard />
                 </ProtectedRoute>
               }
             />

@@ -1,8 +1,11 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
-import { api, ApiError, type Board, type Workspace } from "../api/client";
+import { api, ApiError, type Board, type SharedBoard, type Workspace } from "../api/client";
 import "./Dashboard.css";
+
+/** Sentinel workspace id for the "Shared with you" pseudo-workspace — boards you don't own. */
+const SHARED_WS = -1;
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -21,6 +24,8 @@ export default function Dashboard() {
   const [creatingBoard, setCreatingBoard] = useState(false);
   const [renamingBoardId, setRenamingBoardId] = useState<number | null>(null);
   const [renameBoardValue, setRenameBoardValue] = useState("");
+
+  const [sharedBoards, setSharedBoards] = useState<SharedBoard[]>([]);
 
   const [error, setError] = useState<string | null>(null);
 
@@ -43,10 +48,13 @@ export default function Dashboard() {
 
   useEffect(() => {
     loadWorkspaces();
+    // Boards other people shared in live outside your own workspaces, so they get their own list
+    // rather than being folded into one — a failure here shouldn't blank the whole dashboard.
+    api.listSharedBoards().then(setSharedBoards).catch(() => {});
   }, []);
 
   useEffect(() => {
-    if (selectedId === null) {
+    if (selectedId === null || selectedId === SHARED_WS) {
       setBoards([]);
       return;
     }
@@ -195,6 +203,17 @@ export default function Dashboard() {
             )
           )}
 
+          {sharedBoards.length > 0 && (
+            <div
+              className={`ws-item ${selectedId === SHARED_WS ? "active" : ""}`}
+              style={{ marginTop: 10 }}
+              onClick={() => setSelectedId(SHARED_WS)}
+            >
+              <span>Shared with you</span>
+              <span className="count">{sharedBoards.length}</span>
+            </div>
+          )}
+
           {creatingWorkspace ? (
             <form className="inline-form" onSubmit={handleCreateWorkspace}>
               <input
@@ -215,7 +234,28 @@ export default function Dashboard() {
         </aside>
 
         <section className="boards-panel">
-          {!selectedWorkspace ? (
+          {selectedId === SHARED_WS ? (
+            <>
+              <div className="panel-head">
+                <h2>Shared with you</h2>
+              </div>
+              <div className="board-grid">
+                {sharedBoards.map((b) => (
+                  <div className="board-card" key={b.id}>
+                    <div className="title">{b.title}</div>
+                    <div className="shared-meta">
+                      {b.ownerName} · {b.workspaceName} · {b.role}
+                    </div>
+                    <div className="actions">
+                      <Link className="btn small primary" to={`/board/${b.id}`}>
+                        Open
+                      </Link>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : !selectedWorkspace ? (
             <div className="empty-state">Create a workspace to get started.</div>
           ) : (
             <>

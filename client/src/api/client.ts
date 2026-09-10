@@ -19,7 +19,22 @@ export type Board = {
   created_at: string;
 };
 
-export type BoardWithContent = Board & { content: unknown; parentTitle: string | null };
+export type BoardWithContent = Board & { content: unknown; parentTitle: string | null; role?: BoardRole };
+
+/** owner is implicit (you own the workspace); the rest are grants in board_members. */
+export type BoardRole = "owner" | "editor" | "commenter" | "viewer";
+export type SharableRole = Exclude<BoardRole, "owner">;
+
+export type BoardMember = { id: number; name: string; email: string; role: SharableRole };
+export type InviteLink = { token: string; role: SharableRole };
+export type SharedBoard = {
+  id: number;
+  title: string;
+  workspace_id: number;
+  role: SharableRole;
+  workspaceName: string;
+  ownerName: string;
+};
 
 export type LinkPreview = {
   url: string;
@@ -93,6 +108,27 @@ export const api = {
   listSubboards: (id: number) => request<Board[]>(`/api/boards/${id}/subboards`),
   createSubboard: (id: number, title: string) =>
     request<Board>(`/api/boards/${id}/subboards`, { method: "POST", body: JSON.stringify({ title }) }),
+
+  // --- sharing ---
+  listSharedBoards: () => request<SharedBoard[]>("/api/shared-boards"),
+  listMembers: (boardId: number) => request<BoardMember[]>(`/api/boards/${boardId}/members`),
+  addMember: (boardId: number, email: string, role: SharableRole) =>
+    request<BoardMember>(`/api/boards/${boardId}/members`, { method: "POST", body: JSON.stringify({ email, role }) }),
+  updateMemberRole: (boardId: number, userId: number, role: SharableRole) =>
+    request<{ ok: true }>(`/api/boards/${boardId}/members/${userId}`, { method: "PATCH", body: JSON.stringify({ role }) }),
+  removeMember: (boardId: number, userId: number) =>
+    request<{ ok: true }>(`/api/boards/${boardId}/members/${userId}`, { method: "DELETE" }),
+
+  getInviteLink: (boardId: number) => request<InviteLink | null>(`/api/boards/${boardId}/invite-link`),
+  createInviteLink: (boardId: number, role: SharableRole) =>
+    request<InviteLink>(`/api/boards/${boardId}/invite-link`, { method: "POST", body: JSON.stringify({ role }) }),
+  updateInviteLinkRole: (boardId: number, role: SharableRole) =>
+    request<{ ok: true }>(`/api/boards/${boardId}/invite-link`, { method: "PATCH", body: JSON.stringify({ role }) }),
+  revokeInviteLink: (boardId: number) =>
+    request<{ ok: true }>(`/api/boards/${boardId}/invite-link`, { method: "DELETE" }),
+
+  joinByToken: (token: string) =>
+    request<{ boardId: number; role: SharableRole }>(`/api/join/${token}`, { method: "POST" }),
 };
 
 export { ApiError };

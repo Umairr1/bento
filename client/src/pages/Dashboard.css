@@ -189,3 +189,12 @@
   font-size: 13.5px;
   padding: 40px 0;
 }
+
+/* Boards someone else shared in: owner / workspace / your role, since none of that is obvious
+   from the title alone the way it is for boards in your own workspaces. */
+.board-card .shared-meta {
+  font-size: 11.5px;
+  color: #6f6d79;
+  margin-top: 4px;
+  text-transform: capitalize;
+}

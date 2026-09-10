@@ -16,11 +16,12 @@ import {
   type CoordinateExtent,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { api, ApiError, type Board } from "../api/client";
+import { api, ApiError, type BoardWithContent } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import { useYjsBoard } from "../collab/useYjsBoard";
 import { BoardSettingsContext } from "../collab/BoardSettingsContext";
 import { BoardSidebar } from "./BoardSidebar";
+import { ShareDialog } from "./ShareDialog";
 import { generateShuffleLayout, computeLayoutArea, insetRectsUniformly, DEFAULT_SHUFFLE_SETTINGS, type ShuffleSettings } from "../canvas/shuffleLayout";
 import { TEMPLATES, templateRectsForCount, fracRectToArea, type TemplateId } from "../canvas/templates";
 import { DEFAULT_PRESENTATION_SETTINGS, type PresentationSettings } from "../canvas/presentationSettings";
@@ -86,6 +87,7 @@ import {
   BoardGlyphIcon,
   UndoIcon,
   RedoIcon,
+  ShareIcon,
 } from "./toolbarIcons";
 import { ShuffleIcon } from "./sidebarIcons";
 import "./BoardEditor.css";
@@ -162,7 +164,7 @@ function BoardEditorInner() {
   const { user } = useAuth();
   const viewport = useViewport();
 
-  const [board, setBoard] = useState<Board & { parentTitle: string | null }>();
+  const [board, setBoard] = useState<BoardWithContent>();
   const [loadError, setLoadError] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
   const [drawMode, setDrawMode] = useState(false);
@@ -189,6 +191,7 @@ function BoardEditorInner() {
   const [columnPickerOpen, setColumnPickerOpen] = useState(false);
   const [customRows, setCustomRows] = useState("");
   const [customCols, setCustomCols] = useState("");
+  const [shareOpen, setShareOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchMatchIndex, setSearchMatchIndex] = useState(0);
@@ -1633,6 +1636,9 @@ function BoardEditorInner() {
             {status === "connecting" && "Connecting…"}
             {status === "disconnected" && "Offline"}
           </span>
+          <button className="btn small share-btn" onClick={() => setShareOpen(true)} title="Share this board with your team">
+            <ShareIcon /> Share
+          </button>
           <button className="btn small icon-btn" onClick={undo} title="Undo (Ctrl+Z)">
             <UndoIcon />
           </button>
@@ -2115,6 +2121,15 @@ function BoardEditorInner() {
 
       {presenting && (
         <PresentationView nodes={nodes} settings={presentationSettings} onClose={() => setPresenting(false)} />
+      )}
+
+      {shareOpen && board && (
+        <ShareDialog
+          boardId={board.id}
+          boardTitle={board.title}
+          canManage={(board.role ?? "owner") === "owner"}
+          onClose={() => setShareOpen(false)}
+        />
       )}
     </div>
   );

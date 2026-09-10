@@ -1,12 +1,14 @@
 import { useState, type FormEvent } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
+import { safeNext, withNext } from "../auth/nextParam";
 import { ApiError } from "../api/client";
 import "./AuthPages.css";
 
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const next = safeNext(useLocation().search);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -18,7 +20,7 @@ export default function Login() {
     setSubmitting(true);
     try {
       await login(email, password);
-      navigate("/", { replace: true });
+      navigate(next, { replace: true });
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Something went wrong");
     } finally {
@@ -62,7 +64,7 @@ export default function Login() {
         </button>
 
         <p className="auth-switch">
-          Don't have an account? <Link to="/signup">Sign up</Link>
+          Don't have an account? <Link to={withNext("/signup", next)}>Sign up</Link>
         </p>
       </form>
     </main>
