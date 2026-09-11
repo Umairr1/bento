@@ -1,30 +1,33 @@
 #!/usr/bin/env bash
 #
-# First-run setup for a fresh Oracle Cloud (or any Ubuntu/Debian) VM.
-# Installs Docker, fetches the app, and generates a JWT secret.
+# One-shot setup for a fresh Oracle Cloud (or any Ubuntu/Debian) VM.
+# Installs Docker, fetches the app, generates a JWT secret, and starts the stack.
 #
-#   curl -fsSL https://raw.githubusercontent.com/Umairr1/bento/main/deploy/oracle-setup.sh | bash
+# Fully unattended when you pass the tunnel token:
+#   curl -fsSL https://raw.githubusercontent.com/Umairr1/bento/main/deploy/oracle-setup.sh \
+#     | TUNNEL_TOKEN=eyJhIjoi... bash
 #
-# Safe to re-run: it skips anything already done and never overwrites an existing .env.
+# Without it, the script stops after setup and prints what's left to do.
+# Safe to re-run: it skips what's done and never overwrites an existing secret.
 
 set -euo pipefail
 
 REPO="${REPO:-https://github.com/Umairr1/bento.git}"
 DIR="${DIR:-$HOME/bento}"
+TUNNEL_TOKEN="${TUNNEL_TOKEN:-}"
 
 say() { printf '\n\033[1;36m==> %s\033[0m\n' "$1"; }
+die() { printf '\n\033[1;31mError: %s\033[0m\n' "$1" >&2; exit 1; }
 
-if [ "$(id -u)" -eq 0 ]; then
-  echo "Run this as your normal user (the 'ubuntu' user), not root." >&2
-  exit 1
-fi
+[ "$(id -u)" -eq 0 ] && die "Run as your normal user (usually 'ubuntu'), not root."
 
 say "Installing Docker"
 if command -v docker >/dev/null 2>&1; then
-  echo "Docker already installed — skipping."
+  echo "Already installed."
 else
   curl -fsSL https://get.docker.com | sudo sh
   sudo usermod -aG docker "$USER"
+  NEW_GROUP=1
 fi
 
 say "Fetching the app"
@@ -36,41 +39,62 @@ fi
 cd "$DIR"
 
 say "Configuring"
-if [ -f .env ]; then
-  echo "Keeping the existing .env (delete it if you want a fresh one)."
+# Preserve an existing secret — regenerating it would invalidate everyone's login session.
+if [ -f .env ] && grep -q '^JWT_SECRET=.\+' .env; then
+  JWT_SECRET="$(grep '^JWT_SECRET=' .env | cut -d= -f2-)"
+  echo "Reusing the existing JWT_SECRET."
 else
-  SECRET="$(node -e "console.log(require('crypto').randomBytes(48).toString('hex'))" 2>/dev/null \
-            || openssl rand -hex 48)"
-  cat > .env <<ENVEOF
-JWT_SECRET=$SECRET
-TUNNEL_TOKEN=
-ENVEOF
-  chmod 600 .env
-  echo "Wrote .env with a freshly generated JWT_SECRET."
+  JWT_SECRET="$(openssl rand -hex 48)"
+  echo "Generated a new JWT_SECRET."
 fi
 
-cat <<'NEXT'
+# Keep a previously saved token if this run didn't supply one.
+if [ -z "$TUNNEL_TOKEN" ] && [ -f .env ]; then
+  TUNNEL_TOKEN="$(grep '^TUNNEL_TOKEN=' .env 2>/dev/null | cut -d= -f2- || true)"
+fi
+
+umask 077
+printf 'JWT_SECRET=%s\nTUNNEL_TOKEN=%s\n' "$JWT_SECRET" "$TUNNEL_TOKEN" > .env
+chmod 600 .env
+
+if [ -z "$TUNNEL_TOKEN" ]; then
+  cat <<'NEXT'
 
 ------------------------------------------------------------------
-Almost there. Two things left:
+Setup done, but there's no Cloudflare Tunnel token yet.
 
-1. Create the Cloudflare Tunnel
-     Cloudflare dashboard → Zero Trust → Networks → Tunnels
-       → Create a tunnel → Cloudflared → name it "bento"
-       → copy the token out of the install command they show
-       → Public Hostname:
-             subdomain : bento
-             domain    : premiummarkup.com
-             service   : HTTP  ->  app:4000
+  Cloudflare → Zero Trust → Networks → Tunnels
+    → Create a tunnel → Cloudflared → name it "bento"
+    → copy the token from the install command
+    → Public Hostname:  bento . premiummarkup.com
+                        HTTP  ->  app:4000
 
-2. Paste the token into .env, then start it:
-     nano ~/bento/.env          # set TUNNEL_TOKEN=...
-     cd ~/bento
-     docker compose up -d --build
-
-   (If docker says "permission denied", log out and back in once —
-    the group change from the install needs a new session.)
-
-Watch it come up:   docker compose logs -f
+Then finish with:
+  cd ~/bento && nano .env      # paste into TUNNEL_TOKEN=
+  docker compose up -d --build
 ------------------------------------------------------------------
 NEXT
+  exit 0
+fi
+
+say "Starting the stack (first ARM build takes a few minutes — better-sqlite3 compiles from source)"
+# The docker group change doesn't apply until a new login session, so this first run needs sudo.
+DOCKER="docker"
+if [ "${NEW_GROUP:-0}" = "1" ] || ! docker info >/dev/null 2>&1; then
+  DOCKER="sudo docker"
+fi
+$DOCKER compose up -d --build
+
+say "Waiting for the app to report healthy"
+for i in $(seq 1 60); do
+  if $DOCKER compose exec -T app node -e \
+      "fetch('http://localhost:4000/api/health').then(r=>r.ok?process.exit(0):process.exit(1)).catch(()=>process.exit(1))" \
+      >/dev/null 2>&1; then
+    say "Up. https://bento.premiummarkup.com should be live within a few seconds."
+    $DOCKER compose ps
+    exit 0
+  fi
+  sleep 5
+done
+
+die "App didn't become healthy in 5 minutes. Check: $DOCKER compose logs app"

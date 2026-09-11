@@ -43,11 +43,15 @@ ssh -i your-key.key ubuntu@<the instance's public IP>
 
 ## 2. Run the setup script
 
+If you already have the tunnel token from step 3, pass it and the whole thing completes unattended:
+
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Umairr1/bento/main/deploy/oracle-setup.sh | bash
+curl -fsSL https://raw.githubusercontent.com/Umairr1/bento/main/deploy/oracle-setup.sh   | TUNNEL_TOKEN=eyJhIjoi... bash
 ```
 
-Installs Docker, clones the repo to `~/bento`, and generates a `JWT_SECRET`.
+Without a token it installs Docker, clones to `~/bento`, generates a `JWT_SECRET`, and stops there
+so you can add the token afterwards. Re-running is safe — it keeps the existing secret rather than
+regenerating it, which would log everyone out.
 
 ## 3. Create the Cloudflare Tunnel
 
