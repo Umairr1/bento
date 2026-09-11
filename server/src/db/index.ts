@@ -1,8 +1,7 @@
 import Database from "better-sqlite3";
-import path from "node:path";
+import { DB_PATH } from "../config";
 
-const dbPath = path.join(__dirname, "..", "..", "data.sqlite3");
-export const db = new Database(dbPath);
+export const db = new Database(DB_PATH);
 
 db.pragma("journal_mode = WAL");
 db.pragma("foreign_keys = ON");

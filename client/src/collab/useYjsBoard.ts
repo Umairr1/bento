@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import * as Y from "yjs";
 import { WebsocketProvider } from "y-websocket";
+import { wsUrl } from "../api/config";
 import type { Node } from "@xyflow/react";
 import type { CornerStyle } from "./cornerStyles";
 import { DEFAULT_GRID_CANVAS, type AspectRatioPreset } from "../canvas/gridBoard";
@@ -68,11 +69,6 @@ const DEFAULT_SETTINGS: BoardSettings = {
   contentOnlySwap: false,
 };
 
-function wsBase(): string {
-  const apiBase = (import.meta.env.VITE_API_BASE as string | undefined) ?? "http://localhost:4000";
-  return `${apiBase.replace(/^http/, "ws")}/yjs`;
-}
-
 type GridNodeFields = { gridCol1?: number; gridRow1?: number; gridCol2?: number; gridRow2?: number };
 
 function sanitizeNode(n: Node) {
@@ -130,7 +126,7 @@ export function useYjsBoard<T extends Node>(boardId: number, userName: string) {
     const ydoc = new Y.Doc();
     const yMap = ydoc.getMap<unknown>("nodes");
     const settingsMap = ydoc.getMap<unknown>("settings");
-    const provider = new WebsocketProvider(wsBase(), `board-${boardId}`, ydoc);
+    const provider = new WebsocketProvider(wsUrl(), `board-${boardId}`, ydoc);
     const undoManager = new Y.UndoManager(yMap, { trackedOrigins: new Set([LOCAL_ORIGIN]) });
 
     ydocRef.current = ydoc;

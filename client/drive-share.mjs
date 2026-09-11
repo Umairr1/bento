@@ -7,7 +7,7 @@
 import { chromium } from "playwright";
 import { mkdirSync } from "node:fs";
 
-const BASE = "http://localhost:5173";
+const BASE = process.env.BASE_URL ?? "http://localhost:5173";
 const SHOTS = "drive-shots";
 mkdirSync(SHOTS, { recursive: true });
 

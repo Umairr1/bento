@@ -1,0 +1,13 @@
+**/node_modules
+**/dist
+**/.git
+**/.env
+**/.env.*
+**/data.sqlite3*
+**/uploads
+client/drive-shots
+client/drive-*.mjs
+client/test-image.png
+*.mp4
+*.webm
+.claude

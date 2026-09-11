@@ -2,11 +2,8 @@ import { Router } from "express";
 import multer from "multer";
 import crypto from "node:crypto";
 import path from "node:path";
-import fs from "node:fs";
 import { requireAuth } from "../middleware/requireAuth";
-
-const uploadsDir = path.join(__dirname, "..", "..", "uploads");
-fs.mkdirSync(uploadsDir, { recursive: true });
+import { UPLOADS_DIR as uploadsDir } from "../config";
 
 const ALLOWED_IMAGE_MIME = new Set(["image/png", "image/jpeg", "image/gif", "image/webp", "image/svg+xml"]);
 const ALLOWED_VIDEO_MIME = new Set(["video/mp4", "video/webm", "video/quicktime", "video/ogg"]);
