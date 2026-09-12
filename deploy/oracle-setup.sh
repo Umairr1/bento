@@ -21,6 +21,19 @@ die() { printf '\n\033[1;31mError: %s\033[0m\n' "$1" >&2; exit 1; }
 
 [ "$(id -u)" -eq 0 ] && die "Run as your normal user (usually 'ubuntu'), not root."
 
+say "Installing prerequisites"
+# Oracle's Ubuntu cloud image ships neither git nor openssl, so install them before use rather
+# than failing on the first clone.
+MISSING=()
+for c in git openssl; do command -v "$c" >/dev/null 2>&1 || MISSING+=("$c"); done
+if [ ${#MISSING[@]} -gt 0 ]; then
+  echo "Installing: ${MISSING[*]}"
+  sudo apt-get update -qq
+  sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq "${MISSING[@]}"
+else
+  echo "git and openssl already present."
+fi
+
 say "Installing Docker"
 if command -v docker >/dev/null 2>&1; then
   echo "Already installed."
