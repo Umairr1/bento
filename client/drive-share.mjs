@@ -115,6 +115,8 @@ try {
   await g.waitForSelector(".shd");
   check("guest sees no invite form", (await g.locator(".shd-invite").count()) === 0);
   check("guest sees no link controls", (await g.locator(".shd-linkinput").count()) === 0);
+  // The member list loads after the dialog opens; on a slow host counting immediately reads "Loading…".
+  await g.waitForSelector(".shd-members li", { timeout: 15000 }).catch(() => {});
   check("guest still sees the member list", (await g.locator(".shd-members li").count()) > 0);
   await g.screenshot({ path: `${SHOTS}/share-05-guest-dialog.png` });
   await g.click(".shd-close");
