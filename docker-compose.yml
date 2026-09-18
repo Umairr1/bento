@@ -32,7 +32,9 @@ services:
   cloudflared:
     image: cloudflare/cloudflared:latest
     restart: unless-stopped
-    command: tunnel --no-autoupdate run --token ${TUNNEL_TOKEN:?set TUNNEL_TOKEN in .env}
+    # --url sets the origin for a CLI-created tunnel, which has no dashboard ingress rules. For a
+    # dashboard-managed tunnel the dashboard's Public Hostname takes precedence, so it's harmless.
+    command: tunnel --no-autoupdate run --url http://app:4000 --token ${TUNNEL_TOKEN:?set TUNNEL_TOKEN in .env}
     depends_on:
       app:
         condition: service_started
