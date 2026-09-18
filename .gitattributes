@@ -1,0 +1,8 @@
+# Store every text file with LF. Files edited on Windows were landing in the repo with CRLF, and a
+# CRLF shell script dies on Linux with "$'\r': command not found" — which broke the server setup.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.mp4 binary
+*.webm binary
