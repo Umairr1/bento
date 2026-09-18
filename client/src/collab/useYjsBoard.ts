@@ -107,6 +107,10 @@ function isWellFormedNode(value: unknown): value is Node {
 
 export function useYjsBoard<T extends Node>(boardId: number, userName: string) {
   const [nodes, setNodes] = useState<T[]>([]);
+  // Mirrors `nodes` for the sync handler, which is registered once per board and would otherwise
+  // only ever see the initial empty array.
+  const nodesRef = useRef<T[]>([]);
+  nodesRef.current = nodes;
   const [status, setStatus] = useState<"connecting" | "connected" | "disconnected">("connecting");
   const [synced, setSynced] = useState(false);
   const [presence, setPresence] = useState<PresenceUser[]>([]);
@@ -165,6 +169,16 @@ export function useYjsBoard<T extends Node>(boardId: number, userName: string) {
 
     function onSync(isSynced: boolean) {
       if (isSynced) {
+        // Notes created between the socket opening and the first sync were never written to the
+        // doc (the write effect waits for `synced`), so rebuilding from the doc alone would
+        // silently delete them. On a slow server that gap is long enough for a user to add a note
+        // into it. Fold them into the doc first so the rebuild keeps them.
+        const pending = nodesRef.current.filter((n) => !yMap.has(n.id));
+        if (pending.length) {
+          ydoc.transact(() => {
+            for (const n of pending) yMap.set(n.id, sanitizeNode(n));
+          }, LOCAL_ORIGIN);
+        }
         rebuildFromMap();
         rebuildSettings();
         setSynced(true);
@@ -271,5 +285,9 @@ export function useYjsBoard<T extends Node>(boardId: number, userName: string) {
   const undo = useCallback(() => undoManagerRef.current?.undo(), []);
   const redo = useCallback(() => undoManagerRef.current?.redo(), []);
 
-  return { nodes, setNodes, status, synced, presence, settings, updateSettings, setCursor, undo, redo };
+  // "connected" only means the socket is open; edits aren't persisted until the first sync lands.
+  // Reporting "Live" before then told users their changes were safe when they weren't.
+  const shownStatus = status === "connected" && !synced ? "connecting" : status;
+
+  return { nodes, setNodes, status: shownStatus, synced, presence, settings, updateSettings, setCursor, undo, redo };
 }
